@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anatomía Interactiva del Cráneo - Coordenadas Ajustadas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50, #4a235a);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .image-container {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .image-box {
+            position: relative;
+            width: 100%;
+            max-width: 782px;
+            margin: 0 auto;
+        }
+        
+        .skull-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+            display: block;
+        }
+        
+        .info-container {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #ff7e5f;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff7e5f;
+        }
+        
+        .bones-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 25px;
+        }
+        
+        .bones-list li {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .bones-list li:hover {
+            background: rgba(255, 126, 95, 0.3);
+            transform: translateX(10px);
+        }
+        
+        .bones-list li i {
+            margin-right: 15px;
+            font-size: 1.4rem;
+            color: #ff7e5f;
+        }
+        
+        .bone-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .bone-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 5px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #2c3e50, #1a2a6c);
+            width: 90%;
+            max-width: 700px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            padding: 20px;
+            position: relative;
+        }
+        
+        .modal-title {
+            font-size: 2.2rem;
+            margin: 0;
+            color: white;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.3s;
+        }
+        
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .bone-details {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .bone-functions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .bone-functions h3 {
+            color: #ff7e5f;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .bone-functions ul {
+            padding-left: 20px;
+        }
+        
+        .bone-functions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background: rgba(255, 126, 95, 0.2);
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 25px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+        
+        .instructions {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 126, 95, 0.2);
+            border-radius: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .instructions i {
+            margin-right: 10px;
+            color: #feb47b;
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #feb47b;
+        }
+
+        /* Área clickeable invisible por defecto */
+        .clickable-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .area-highlight {
+            position: absolute;
+            pointer-events: auto;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+        }
+
+        /* Modo debug para desarrollo */
+        body.debug-mode .area-highlight {
+            background: rgba(255, 126, 95, 0.2);
+            border: 2px solid rgba(255, 126, 95, 0.7);
+        }
+
+        body.debug-mode .area-highlight svg polygon {
+            fill: rgba(255, 126, 95, 0.2);
+            stroke: rgba(255, 126, 95, 0.7);
+            stroke-width: 2;
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #feb47b;
+            display: none;
+            z-index: 100;
+        }
+        
+        body.debug-mode .debug-info {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-skull"></i> Anatomía Interactiva del Cráneo</h1>
+            <p class="subtitle">Explora los huesos del cráneo humano haciendo clic en cada área de la imagen o seleccionando de la lista. Sistema con coordenadas automáticamente ajustadas.</p>
+        </header>
+        
+        <div class="content">
+            <div class="image-container">
+                <h2>Mapa Craneal Interactivo</h2>
+                <div class="image-box" id="image-container">
+                    <img src="calavera.jpg" alt="Cráneo humano" class="skull-image" id="skull-image">
+                    
+                    <!-- Áreas clickeables que se ajustarán automáticamente -->
+                    <div class="clickable-overlay" id="clickable-overlay"></div>
+                </div>
+                <div class="instructions">
+                    <i class="fas fa-mouse-pointer"></i> Haz clic en cualquier área del cráneo para ver información detallada
+                </div>
+                <div class="status-bar">
+                    <i class="fas fa-check-circle"></i> Sistema de coordenadas responsive implementado
+                </div>
+            </div>
+            
+            <div class="info-container">
+                <h2>Huesos Craneales</h2>
+                <ul class="bones-list">
+                    <li data-info="frontal">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Frontal</div>
+                            <div class="bone-desc">Forma la frente y las órbitas oculares</div>
+                        </div>
+                    </li>
+                    <li data-info="parietal">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Parietal</div>
+                            <div class="bone-desc">Forma los lados y la bóveda del cráneo</div>
+                        </div>
+                    </li>
+                    <li data-info="temporal">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Temporal</div>
+                            <div class="bone-desc">Contiene los órganos de la audición y el equilibrio</div>
+                        </div>
+                    </li>
+                    <li data-info="esfenoides">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Esfenoides</div>
+                            <div class="bone-desc">Hueso complejo en forma de mariposa en la base del cráneo</div>
+                        </div>
+                    </li>
+                    <li data-info="occipital">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Occipital</div>
+                            <div class="bone-desc">Forma la parte posterior e inferior del cráneo</div>
+                        </div>
+                    </li>
+                    <li data-info="mandibula">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Mandíbula</div>
+                            <div class="bone-desc">El hueso más grande y fuerte de la cara</div>
+                        </div>
+                    </li>
+                    <li data-info="nasal">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Huesos Nasales</div>
+                            <div class="bone-desc">Forman el puente de la nariz</div>
+                        </div>
+                    </li>
+                    <li data-info="maxilar">
+                        <i class="fas fa-bone"></i>
+                        <div>
+                            <div class="bone-name">Hueso Maxilar</div>
+                            <div class="bone-desc">Forma la mandíbula superior y sostiene los dientes</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="modal" id="info-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modal-bone-name">Hueso Frontal</h2>
+                    <span class="close-btn" id="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="bone-details" id="bone-details">
+                        <!-- La información se cargará dinámicamente aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Sistema Interactivo de Anatomía Craneal | Coordenadas Responsive | Desarrollado para estudio de anatomía humana</p>
+            <p>© 2023 - Todos los derechos reservados</p>
+        </footer>
+    </div>
+
+    <div class="debug-info" id="debug-info">
+        <i class="fas fa-info-circle"></i> Modo desarrollo activado (Ctrl+D para ocultar)
+    </div>
+
+    <script>
+        // Coordenadas originales basadas en imagen 782x1000
+        const originalAreas = {
+            frontal: {
+                coords: [349,6,174,62,132,184,195,318,368,392,521,368,584,316,647,332,701,288,744,296,640,130,479,28],
+                shape: "poly"
+            },
+            parietal: {
+                coords: [144,343,144,308,168,309,129,204,107,188,132,92,39,205,8,353,40,308],
+                shape: "poly"
+            },
+            occipital: {
+                coords: [184,685,192,660,140,579,168,569,241,533,175,408,35,332,14,469,71,596,124,647],
+                shape: "poly"
+            },
+            esfenoides: {
+                coords: [279,384,254,453,254,519,203,436,185,383,153,349,155,327,214,334],
+                shape: "poly"
+            },
+            temporal: {
+                coords: [292,400,324,408,368,511,372,530,416,546,483,523,436,580,358,622,356,643,261,632,200,597,228,563,264,550,270,444],
+                shape: "poly"
+            },
+            maxilar: {
+                coords: [391,523,404,475,456,468,484,494,506,507,539,462,535,374,552,360,602,486,567,572,600,629,636,594,677,542,660,482,702,485,740,497,715,530,688,622,724,667,656,706,534,727,409,697,387,631,496,558,486,507,421,526],
+                shape: "poly"
+            },
+            nasal: {
+                coords: [565,344,617,472,641,436,676,447,603,332],
+                shape: "poly"
+            },
+            mandibula: {
+                coords: [186,609,318,673,360,781,407,789,415,724,532,751,646,737,729,694,743,738,726,805,701,877,713,930,584,989,536,965,284,823,260,714],
+                shape: "poly"
+            }
+        };
+
+        // Dimensiones originales de la imagen
+        const originalWidth = 782;
+        const originalHeight = 1000;
+
+        // Datos sobre los huesos del cráneo
+        const boneData = {
+            frontal: {
+                name: "Hueso Frontal",
+                description: "El hueso frontal es un hueso del cráneo humano que forma la frente y la parte superior de las órbitas oculares. Es un hueso plano y ancho que protege los lóbulos frontales del cerebro.",
+                functions: [
+                    "Protege el lóbulo frontal del cerebro",
+                    "Forma la estructura de la frente y las cejas",
+                    "Contribuye a la formación del techo de las órbitas oculares",
+                    "Contiene los senos frontales (cavidades llenas de aire)",
+                    "Proporciona inserción a los músculos de la expresión facial"
+                ]
+            },
+            parietal: {
+                name: "Hueso Parietal",
+                description: "Los huesos parietales son dos huesos pares que forman los lados y el techo (bóveda) del cráneo. Se articulan entre sí en la línea media mediante la sutura sagital y con el hueso frontal mediante la sutura coronal.",
+                functions: [
+                    "Forman la mayor parte de la bóveda craneal",
+                    "Protegen los lóbulos parietales del cerebro",
+                    "Proporcionan inserción a los músculos temporales",
+                    "Contienen las eminencias parietales (protuberancias)",
+                    "Presentan surcos para las arterias meníngeas"
+                ]
+            },
+            temporal: {
+                name: "Hueso Temporal",
+                description: "Los huesos temporales son huesos pares situados en los laterales y la base del cráneo. Contienen las estructuras del oído interno y medio, y forman parte de la articulación temporomandibular.",
+                functions: [
+                    "Alberga los órganos de la audición y el equilibrio",
+                    "Forma la articulación temporomandibular con la mandíbula",
+                    "Protege el lóbulo temporal del cerebro",
+                    "Proporciona inserción a músculos de la masticación",
+                    "Contiene el canal carotídeo para la arteria carótida"
+                ]
+            },
+            esfenoides: {
+                name: "Hueso Esfenoides",
+                description: "El hueso esfenoides es un hueso complejo en forma de mariposa situado en la base del cráneo. Articula con casi todos los huesos del cráneo y contiene varias cavidades y estructuras importantes.",
+                functions: [
+                    "Forma la base de la órbita ocular",
+                    "Contiene la silla turca donde se aloja la hipófisis",
+                    "Forma parte de las fosas nasales",
+                    "Presenta múltiples orificios para nervios craneales",
+                    "Alberga los senos esfenoidales"
+                ]
+            },
+            occipital: {
+                name: "Hueso Occipital",
+                description: "El hueso occipital es un hueso impar que forma la parte posterior e inferior del cráneo. Contiene el foramen magno, un gran orificio que comunica la cavidad craneal con el canal vertebral.",
+                functions: [
+                    "Protege el lóbulo occipital del cerebro",
+                    "Contiene el foramen magno para el paso del bulbo raquídeo",
+                    "Proporciona inserción a músculos del cuello",
+                    "Articula con el atlas (primera vértebra cervical)",
+                    "Presenta los cóndilos occipitales para la articulación con la columna"
+                ]
+            },
+            mandibula: {
+                name: "Mandíbula",
+                description: "La mandíbula es el hueso más grande y fuerte de la cara. Es el único hueso móvil del cráneo y forma la mandíbula inferior, albergando los dientes inferiores.",
+                functions: [
+                    "Sostiene los dientes inferiores",
+                    "Permite la masticación mediante movimiento articular",
+                    "Forma la estructura de la barbilla y la mandíbula inferior",
+                    "Proporciona inserción a músculos de la masticación",
+                    "Contiene el canal mandibular para nervios y vasos"
+                ]
+            },
+            nasal: {
+                name: "Huesos Nasales",
+                description: "Los huesos nasales son dos pequeños huesos rectangulares que se unen en la línea media para formar el puente de la nariz. Articulan con el hueso frontal superiormente y con los maxilares lateralmente.",
+                functions: [
+                    "Forman el puente y el dorso de la nariz",
+                    "Proporcionan soporte estructural a la nariz",
+                    "Protegen el conducto nasal superior",
+                    "Contribuyen a la forma facial",
+                    "Articulan con el cartílago nasal inferiormente"
+                ]
+            },
+            maxilar: {
+                name: "Hueso Maxilar",
+                description: "Los huesos maxilares son dos huesos fusionados que forman la mandíbula superior, la mayor parte del paladar duro, las paredes laterales de las fosas nasales y el suelo de las órbitas.",
+                functions: [
+                    "Sostiene los dientes superiores",
+                    "Forma el paladar duro junto con el palatino",
+                    "Contribuye a la formación de las fosas nasales",
+                    "Forma el suelo de la órbita ocular",
+                    "Contiene el seno maxilar (la cavidad paranasal más grande)"
+                ]
+            }
+        };
+
+        // Elementos del DOM
+        const modal = document.getElementById('info-modal');
+        const modalBoneName = document.getElementById('modal-bone-name');
+        const boneDetails = document.getElementById('bone-details');
+        const closeModal = document.getElementById('close-modal');
+        const skullImage = document.getElementById('skull-image');
+        const imageContainer = document.getElementById('image-container');
+        const clickableOverlay = document.getElementById('clickable-overlay');
+        const debugInfo = document.getElementById('debug-info');
+        
+        // Obtener elementos de la lista
+        const boneItems = document.querySelectorAll('.bones-list li');
+        
+        // Función para crear áreas clickeables escaladas
+        function createScaledAreas() {
+            // Limpiar overlay existente
+            clickableOverlay.innerHTML = '';
+            
+            // Obtener dimensiones actuales de la imagen
+            const rect = skullImage.getBoundingClientRect();
+            const currentWidth = skullImage.offsetWidth;
+            const currentHeight = skullImage.offsetHeight;
+            
+            // Calcular factores de escala
+            const scaleX = currentWidth / originalWidth;
+            const scaleY = currentHeight / originalHeight;
+            
+            // Crear elementos clickeables para cada área
+            Object.entries(originalAreas).forEach(([boneId, area]) => {
+                if (area.shape === 'poly') {
+                    // Escalar coordenadas del polígono
+                    const scaledCoords = area.coords.map((coord, index) => {
+                        return index % 2 === 0 ? coord * scaleX : coord * scaleY;
+                    });
+                    
+                    // Calcular bounding box del polígono para crear área clickeable rectangular
+                    const xCoords = scaledCoords.filter((_, index) => index % 2 === 0);
+                    const yCoords = scaledCoords.filter((_, index) => index % 2 !== 0);
+                    
+                    const minX = Math.min(...xCoords);
+                    const maxX = Math.max(...xCoords);
+                    const minY = Math.min(...yCoords);
+                    const maxY = Math.max(...yCoords);
+                    
+                    // Crear elemento clickeable
+                    const clickableArea = document.createElement('div');
+                    clickableArea.className = 'area-highlight';
+                    clickableArea.style.left = minX + 'px';
+                    clickableArea.style.top = minY + 'px';
+                    clickableArea.style.width = (maxX - minX) + 'px';
+                    clickableArea.style.height = (maxY - minY) + 'px';
+                    clickableArea.dataset.info = boneId;
+                    clickableArea.title = boneData[boneId]?.name || boneId;
+                    
+                    // Crear polígono SVG para forma exacta (invisible por defecto)
+                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                    svg.style.position = 'absolute';
+                    svg.style.top = '0';
+                    svg.style.left = '0';
+                    svg.style.width = '100%';
+                    svg.style.height = '100%';
+                    svg.style.pointerEvents = 'none';
+                    
+                    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    const adjustedCoords = scaledCoords.map((coord, index) => {
+                        if (index % 2 === 0) {
+                            return coord - minX; // Ajustar X relativo al contenedor
+                        } else {
+                            return coord - minY; // Ajustar Y relativo al contenedor
+                        }
+                    });
+                    
+                    polygon.setAttribute('points', adjustedCoords.join(','));
+                    polygon.setAttribute('fill', 'transparent');
+                    polygon.setAttribute('stroke', 'transparent');
+                    polygon.setAttribute('stroke-width', '0');
+                    
+                    svg.appendChild(polygon);
+                    clickableArea.appendChild(svg);
+                    
+                    // Añadir evento click
+                    clickableArea.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const boneId = this.getAttribute('data-info');
+                        showBoneInfo(boneId);
+                    });
+                    
+                    clickableOverlay.appendChild(clickableArea);
+                }
+            });
+        }
+        
+        // Función para mostrar información del hueso
+        function showBoneInfo(boneId) {
+            const bone = boneData[boneId];
+            if (!bone) return;
+            
+            modalBoneName.textContent = bone.name;
+            
+            // Construir el contenido del modal
+            let content = `
+                <p class="bone-details">${bone.description}</p>
+                <div class="bone-functions">
+                    <h3><i class="fas fa-tasks"></i> Funciones Principales</h3>
+                    <ul>
+            `;
+            
+            bone.functions.forEach(func => {
+                content += `<li>${func}</li>`;
+            });
+            
+            content += `
+                    </ul>
+                </div>
+                <p style="margin-top: 20px;"><span class="highlight">Consejo:</span> El cráneo humano está formado por 22 huesos, 8 de los cuales forman el neurocráneo (que protege el cerebro) y 14 el viscerocráneo (huesos faciales).</p>
+            `;
+            
+            boneDetails.innerHTML = content;
+            modal.style.display = 'flex';
+        }
+        
+        // Añadir eventos a los elementos de la lista
+        boneItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const boneId = this.getAttribute('data-info');
+                showBoneInfo(boneId);
+            });
+        });
+        
+        // Cerrar modal al hacer clic en la X
+        closeModal.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Cerrar modal al hacer clic fuera del contenido
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Cerrar modal con la tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Crear áreas clickeables cuando la imagen se carga
+        skullImage.addEventListener('load', createScaledAreas);
+        
+        // Recrear áreas cuando la ventana cambia de tamaño
+        window.addEventListener('resize', createScaledAreas);
+        
+        // Inicializar áreas si la imagen ya está cargada
+        if (skullImage.complete) {
+            createScaledAreas();
+        }
+        
+        // Función para alternar visibilidad de las áreas (modo desarrollo)
+        function toggleAreaVisibility() {
+            document.body.classList.toggle('debug-mode');
+        }
+        
+        // Añadir evento de teclado para debug (presiona 'D' para mostrar/ocultar áreas)
+        document.addEventListener('keydown', function(e) {
+            if (e.key.toLowerCase() === 'd' && e.ctrlKey) {
+                e.preventDefault();
+                toggleAreaVisibility();
+            }
+        });
+    </script>
+</body>
+</html>
